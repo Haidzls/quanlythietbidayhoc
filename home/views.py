@@ -110,14 +110,12 @@ def checkHSD(): # kiểm tra hạn sử dụng
 
 def checkGioMuon(): 
     borrowReturn = BorrowReturn.objects.all() #lấy ra bảng lsm ds các thiết bị đã đc đky
-    listls=[] #tạo ds mới  những thiết bị mượn ngay hôm đó
+    listls=[] #tạo ds mới  những thiết bị mượn nhưng chưa trả
     for x in borrowReturn:
         if "-" in x.giaovien:
             non=0
         else:
-            dateNow =str(timeVietnam("dmy")) #lấy giờ thực tế
-            if dateNow > x.muon or dateNow == x.muon:
-                listls.append(x) # thêm vào
+            listls.append(x) # thêm vào
     for x in listls:
         input_time_string = x.tiet
         input_time = datetime.strptime(input_time_string, "%H:%M:%S")
@@ -125,7 +123,8 @@ def checkGioMuon():
         result_time_string = result_time.strftime("%H:%M:%S")
         T= str(x.muon) + " "+ result_time_string #2023-11-30 08:00:00  2023-11-30 07:15:00
         dateNow =str(timeVietnam("no"))
-        if T== dateNow or T<dateNow or dateNow>result_time:
+        # dateNow = "2022-12-20 09:20:00" # test thời gian timetest
+        if T== dateNow or dateNow>T or dateNow< x.tiet:
             device = Device.objects.get(id=x.deviceId_id)
             mt= BorrowReturn.objects.get(id=x.id)
             mt.giaovien = mt.giaovien + "-"
@@ -140,6 +139,7 @@ def checkGioMuon():
         result_time_string = result_time.strftime("%H:%M:%S")
         T= str(x.muon) + " "+ result_time_string #2023-11-30 08:00:00  2023-11-30 07:15:00
         dateNow =str(timeVietnam("no"))
+        # dateNow = "2022-12-20 07:20:00" # test thời gian timetest
         if dateNow < T:
             if "-" in x.giaovien:
                 if "T" in x.giaovien:
@@ -152,11 +152,9 @@ def checkGioMuon():
                     device.quantity=int(device.quantity) +1
                     device.save()
                     print(mt.giaovien)
-
-
-
 def checkSLM(deviceId,tietm,ngaym): #lấy lúc mình bấm mượn
     dateNow =str(timeVietnam("no"))
+    # dateNow = "2022-12-20 09:20:00" #test thời gian timetest
     input_time_string = tietm
     input_time = datetime.strptime(input_time_string, "%H:%M:%S")
     result_time = input_time - timedelta(minutes=45)
@@ -305,6 +303,8 @@ def getHome(request):
             deviceId = request.POST.get('deviceId')
             mon = request.POST.get('mon')
             search = request.POST.get('search')
+            if search == None or search == '':
+                search = "con meo beo"
             if search != None and search != '': # thanh tìm kiếm  input thuộc tên thiết bị lưu vào mảng mới và trả về
                 search = search.upper()
                 l = Device.objects.all()
@@ -322,7 +322,7 @@ def getHome(request):
                 device = Device.objects.get(id = deviceId)
                 listT = thongBao(request)
                 return render(request, 'pages/Borrowdevice.html',{"device": device,"thongbao":listT,"name":name,"role":rl,"userName":userName})
-            if mon!="" and mon!=None: #tìm kiếm theo môn
+            if mon!="": #tìm kiếm theo môn
                 l = Device.objects.all()
                 device=[]
                 for x in l:
@@ -455,6 +455,8 @@ def getAdmin(request):
             capnhat = request.POST.get('capnhat')
             mon = request.POST.get('mon')
             search = request.POST.get('search')
+            if search == None or search == '':
+                search = "con meo beo"
             if search != None and search != '': # tìm kiếm
                 search=search.upper()
                 device = Device.objects.all()
@@ -472,7 +474,7 @@ def getAdmin(request):
                 device = Device.objects.get(id =capnhat)
                 listT =thongBao(request)
                 return render(request, 'pages/Add.html',{"device":device, "role":rl,"name":name, "thongbao":listT,"id":id})
-            if mon!="" and mon != None: # lọc môn hết hạn
+            if mon!="" or mon != None: # lọc môn hết hạn
                 device = Device.objects.all()
                 listmon =[]
                 if mon == "hsd":
