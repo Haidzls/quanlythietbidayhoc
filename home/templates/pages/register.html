@@ -23,8 +23,8 @@
           {% csrf_token %}
           <span class="signIn-header">Đăng ký</span>
           <input type="text" name="userName" id="userName" class="signIn-name input-form" placeholder="Số điện thoại/Email" required title="Vui lòng nhập tên đăng nhập">
-          <input type="password" name="password" id="password" class="signIn-pass input-form" placeholder="Chọn mật khẩu" required title="Vui lòng nhập mật khẩu">
-          <input type="password"  class="signIn-pass input-form" placeholder="Điền lại mật khẩu" required title="Vui lòng nhập mật khẩu">
+          <input type="password" name="password" id="password" class="signIn-pass input-form" placeholder="Chọn mật khẩu" required title="Vui lòng nhập mật khẩu" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*?])[a-zA-Z0-9!@#$%^&*?]{8,}$" oninvalid="this.setCustomValidity('Đảm bảo mật khẩu có đủ chữ thường, chữ hoa, chữ số, ký tự đặc biệt và có ít nhất 8 ký tự')" oninput="this.setCustomValidity('')">
+          <input type="password"  class="signIn-pass input-form" placeholder="Điền lại mật khẩu" required title="Vui lòng nhập mật khẩu" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*?])[a-zA-Z0-9!@#$%^&*?]{8,}$" oninvalid="this.setCustomValidity('Đảm bảo mật khẩu có đủ chữ thường, chữ hoa, chữ số, ký tự đặc biệt và có ít nhất 8 ký tự')" oninput="this.setCustomValidity('')">
           <input type="text" name="name" id="name" class="signIn-pass input-form" placeholder="Nhập họ và tên" required title="Vui lòng nhập họ và tên">
           <select name="role" id="role" class="signIn-select input-form">
             <option value="">--- Bạn là? ---</option>

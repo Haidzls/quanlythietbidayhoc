@@ -275,14 +275,17 @@ def getLogin(request): # hàm phụ trách  view đăng nhập
     return render(request, 'pages/Login.html')
 
 def getRegister(request): # đăng ký
+    print('oke', request)
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
+            print(form)
             form.save()
             return redirect('/') # đăng ký thành công cho về trang đăng nhập
     else:
         form = UserForm()
     return render(request, 'pages/Register.html', {'form': form})
+
 def getHome(request):
     id = request.session.get('id') #eeeeeeeeee
     if checkLogin(request):
