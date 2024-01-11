@@ -39,8 +39,8 @@
 }
 
 .header__logo--home{
-	font-size: 30px;
-	padding-right: 8px;
+    object-fit: contain;
+	height: 50px;
 	align-self: center;
 }
 

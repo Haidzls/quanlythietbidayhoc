@@ -275,17 +275,21 @@ def getLogin(request): # hàm phụ trách  view đăng nhập
     return render(request, 'pages/Login.html')
 
 def getRegister(request): # đăng ký
-    print('oke', request)
     if request.method == 'POST':
+        bq = request.POST.get('bq')
+        l = request.POST.get('l')
         form = UserForm(request.POST)
-        if form.is_valid():
-            print(form)
-            form.save()
-            return redirect('/') # đăng ký thành công cho về trang đăng nhập
+        if l == form.data['password']:
+            try:
+                user = User.objects.get(userName = form.data['userName'])
+                return redirect('/register')     
+            except:
+                if form.is_valid() and bq !=None:
+                    form.save()
+                    return redirect('/') 
     else:
         form = UserForm()
     return render(request, 'pages/Register.html', {'form': form})
-
 def getHome(request):
     id = request.session.get('id') #eeeeeeeeee
     if checkLogin(request):
@@ -303,8 +307,6 @@ def getHome(request):
             deviceId = request.POST.get('deviceId')
             mon = request.POST.get('mon')
             search = request.POST.get('search')
-            if search == None or search == '':
-                search = "con meo beo"
             if search != None and search != '': # thanh tìm kiếm  input thuộc tên thiết bị lưu vào mảng mới và trả về
                 search = search.upper()
                 l = Device.objects.all()
@@ -322,7 +324,7 @@ def getHome(request):
                 device = Device.objects.get(id = deviceId)
                 listT = thongBao(request)
                 return render(request, 'pages/Borrowdevice.html',{"device": device,"thongbao":listT,"name":name,"role":rl,"userName":userName})
-            if mon!="": #tìm kiếm theo môn
+            if mon!="" and mon!="none": #tìm kiếm theo môn
                 l = Device.objects.all()
                 device=[]
                 for x in l:
@@ -455,8 +457,6 @@ def getAdmin(request):
             capnhat = request.POST.get('capnhat')
             mon = request.POST.get('mon')
             search = request.POST.get('search')
-            if search == None or search == '':
-                search = "con meo beo"
             if search != None and search != '': # tìm kiếm
                 search=search.upper()
                 device = Device.objects.all()
@@ -474,7 +474,7 @@ def getAdmin(request):
                 device = Device.objects.get(id =capnhat)
                 listT =thongBao(request)
                 return render(request, 'pages/Add.html',{"device":device, "role":rl,"name":name, "thongbao":listT,"id":id})
-            if mon!="" or mon != None: # lọc môn hết hạn
+            if mon!="" and mon != None: # lọc môn hết hạn
                 device = Device.objects.all()
                 listmon =[]
                 if mon == "hsd":
@@ -656,15 +656,23 @@ def getThietBiDangDuocMuon(request):
                 device = BorrowReturn.objects.select_related('deviceId','userId').filter(userId=idUser)
                 listm=[]
                 listt=[]
+                listll=[]
                 for x in device:
-                    if "-T" in x.giaovien:
-                        if search in x.deviceId.name:
-                            listt.append(x)  
-                    else:
-                        if search in x.deviceId.name:
+                    if "-" in x.giaovien:
+                        if "T" in x.giaovien:
+                            listll.append(x)
+                        else:
                             listm.append(x)
+                    else:
+                        listt.append(x)
+                    # if "-T" in x.giaovien:
+                    #     if search in x.deviceId.name:
+                    #         listt.append(x)  
+                    # else:
+                    #     if search in x.deviceId.name:
+                    #         listm.append(x)
                 listT =thongBao(request)
-                return render(request, 'pages/Thietbidangduocmuon.html',{"device1": listm,"device2":listt,"role":rl,"name":name,"thongbao":listT,"id":id})
+                return render(request, 'pages/Thietbidangduocmuon.html',{"device1": listm,"device2":listt,"device3":listll,"role":rl,"name":name,"thongbao":listT,"id":id})
             if xoa != None and idtra != None: # xác nhận trả
                 device = Device.objects.get(id=xoa)
                 device.quantity = int(device.quantity)+1
