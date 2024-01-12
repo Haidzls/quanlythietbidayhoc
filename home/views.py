@@ -307,7 +307,7 @@ def getHome(request):
             deviceId = request.POST.get('deviceId')
             mon = request.POST.get('mon')
             search = request.POST.get('search')
-            if search != None and search != '': # thanh tìm kiếm  input thuộc tên thiết bị lưu vào mảng mới và trả về
+            if search != None or search != '': # thanh tìm kiếm  input thuộc tên thiết bị lưu vào mảng mới và trả về
                 search = search.upper()
                 l = Device.objects.all()
                 device=[]
@@ -324,7 +324,7 @@ def getHome(request):
                 device = Device.objects.get(id = deviceId)
                 listT = thongBao(request)
                 return render(request, 'pages/Borrowdevice.html',{"device": device,"thongbao":listT,"name":name,"role":rl,"userName":userName})
-            if mon!="" and mon!="none": #tìm kiếm theo môn
+            if mon!="" or mon!="none": #tìm kiếm theo môn
                 l = Device.objects.all()
                 device=[]
                 for x in l:
@@ -650,7 +650,7 @@ def getThietBiDangDuocMuon(request):
                 device = get_object_or_404(BorrowReturn, pk=xoalichsu)
                 device.delete()
                 return redirect('/thietbidangduocmuon')
-            if search != None and search != '': # tìm kiếm
+            if search != None or search != '': # tìm kiếm
                 search=search.upper()
                 idUser = request.session.get('id') #eeeeeeeeee
                 device = BorrowReturn.objects.select_related('deviceId','userId').filter(userId=idUser)
