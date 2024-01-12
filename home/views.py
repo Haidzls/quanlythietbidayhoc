@@ -239,7 +239,7 @@ def getLogin(request): # hàm phụ trách  view đăng nhập
                 del request.session['name']
                 request.session.pop('role', None)
             logout(request)
-            return render(request, 'pages/Login.html')
+            return render(request, 'pages/login.html')
         try:
             user = User.objects.get(userName=userName,password=password) # đăng nhập thành công lưu người dùng lại
             request.session['id'] = str(user.id)
@@ -249,7 +249,7 @@ def getLogin(request): # hàm phụ trách  view đăng nhập
             checkHSD() # kiểm tra hạn sử dụng
             checkGioMuon() # kiểm tra giừo mượn
         except:
-            return render(request, 'pages/Login.html') # nếu có exception cho về đăng nhập
+            return render(request, 'pages/login.html') # nếu có exception cho về đăng nhập
         listDevice =[] # thiế bị còn lưu vào mảng này
         listDevice0 =[] # nếu hết thì vào  đây
         for x in device:
@@ -271,8 +271,8 @@ def getLogin(request): # hàm phụ trách  view đăng nhập
             rl = True
         else:
             rl =False
-        return render(request, 'pages/Home.html',{'device':listDevice,"role":rl,"name":name,"id":id, "device0":listDevice0,"thongbao":listT,"id":id})
-    return render(request, 'pages/Login.html')
+        return render(request, 'pages/home.html',{'device':listDevice,"role":rl,"name":name,"id":id, "device0":listDevice0,"thongbao":listT,"id":id})
+    return render(request, 'pages/login.html')
 
 def getRegister(request): # đăng ký
     if request.method == 'POST':
@@ -289,7 +289,7 @@ def getRegister(request): # đăng ký
                     return redirect('/') 
     else:
         form = UserForm()
-    return render(request, 'pages/Register.html', {'form': form})
+    return render(request, 'pages/register.html', {'form': form})
 def getHome(request):
     id = request.session.get('id') #eeeeeeeeee
     if checkLogin(request):
@@ -319,11 +319,11 @@ def getHome(request):
                     if search in x.name and x.unit != 'phòng':
                         list.append(x)
                     listT =thongBao(request)
-                return render(request, 'pages/Home.html',{"device": list,"thongbao":listT,"id":id,"name":name,"role":rl,"id":id})
+                return render(request, 'pages/home.html',{"device": list,"thongbao":listT,"id":id,"name":name,"role":rl,"id":id})
             if deviceId!=None: # nút đăng ký mượn trả thiết bị đó về  trang thôing tin mươn
                 device = Device.objects.get(id = deviceId)
                 listT = thongBao(request)
-                return render(request, 'pages/Borrowdevice.html',{"device": device,"thongbao":listT,"name":name,"role":rl,"userName":userName})
+                return render(request, 'pages/borrowdevice.html',{"device": device,"thongbao":listT,"name":name,"role":rl,"userName":userName})
             if mon!="" or mon!="none": #tìm kiếm theo môn
                 l = Device.objects.all()
                 device=[]
@@ -335,7 +335,7 @@ def getHome(request):
                     if mon in x.code and x.unit != 'phòng':
                         list.append(x)
                 listT = thongBao(request)
-                return render(request, 'pages/Home.html',{"device": list,"thongbao":listT,"name":name,"role":rl,"id":id})
+                return render(request, 'pages/home.html',{"device": list,"thongbao":listT,"name":name,"role":rl,"id":id})
         l = Device.objects.all()
         device=[]
         for x in l:
@@ -349,7 +349,7 @@ def getHome(request):
             if x.unit !="phòng" and int(x.quantity) <= 0:
                 listDevice0.append(x)
         listT = thongBao(request)
-        return render(request, 'pages/Home.html',{"device":listDevice,"role":rl,"name":name,"device0":listDevice0,"thongbao":listT,"id":id})
+        return render(request, 'pages/home.html',{"device":listDevice,"role":rl,"name":name,"device0":listDevice0,"thongbao":listT,"id":id})
     else:
         return redirect('/') # chưa đăng nhạp cho về trang đăng nhập
 def getThongKe(request):
@@ -395,7 +395,7 @@ def getThongKe(request):
                 for x in list:
                     sum =sum+1
                 listT =thongBao(request)
-                return render(request, 'pages/Thongke.html',{"device":giosangtiet(list), "sum":sum,"name":nameUser,"role":rl,"thongbao":listT,"id":id})
+                return render(request, 'pages/thongke.html',{"device":giosangtiet(list), "sum":sum,"name":nameUser,"role":rl,"thongbao":listT,"id":id})
             if giaovien != None: # thống kê theo giáo viên
                 list = []
                 for x in device:
@@ -405,21 +405,21 @@ def getThongKe(request):
                 for x in list:
                     sum =sum+1
                 listT =thongBao(request)
-                return render(request, 'pages/Thongke.html',{"device":giosangtiet(list), "sum":sum,"name":nameUser,"role":rl,"thongbao":listT,"id":id})
+                return render(request, 'pages/thongke.html',{"device":giosangtiet(list), "sum":sum,"name":nameUser,"role":rl,"thongbao":listT,"id":id})
             if nams != "" and name != "": # thống kê theo năm
                 r = BorrowReturn.objects.filter(muon__gte=f"{nams}-1-1", muon__lte=f"{name}-12-31")
                 sum =0
                 for x in r:
                     sum =sum+1
                 listT =thongBao(request)
-                return render(request, 'pages/Thongke.html',{"device":giosangtiet(r), "sum":sum,"name":nameUser,"role":rl, "thongbao":listT,"id":id})
+                return render(request, 'pages/thongke.html',{"device":giosangtiet(r), "sum":sum,"name":nameUser,"role":rl, "thongbao":listT,"id":id})
             if ngays != None and ngaye != None: # thống kê theo ngày nào đến ngày nào
                 r = BorrowReturn.objects.filter(muon__gte=f"{ngays}", muon__lte=f"{ngaye}")
                 sum =0
                 for x in r:
                     sum =sum+1
                 listT =thongBao(request)
-                return render(request, 'pages/Thongke.html',{"device":giosangtiet(r),"sum":sum,"name":nameUser,"role":rl,"thongbao":listT,"id":id})
+                return render(request, 'pages/thongke.html',{"device":giosangtiet(r),"sum":sum,"name":nameUser,"role":rl,"thongbao":listT,"id":id})
             if e != None: # xuất excel
                 device = BorrowReturn.objects.select_related('deviceId','userId').all().order_by('id')
                 file = excel(giosangtiet(device))
@@ -437,7 +437,7 @@ def getThongKe(request):
                 file = excelHsd(listHsd)
                 return file
         listT= thongBao(request)
-        return render(request, 'pages/Thongke.html',{"device":giosangtiet(device), "sum":sum,"name":nameUser ,"role":rl,"thongbao":listT,"id":id})
+        return render(request, 'pages/thongke.html',{"device":giosangtiet(device), "sum":sum,"name":nameUser ,"role":rl,"thongbao":listT,"id":id})
     else:
         return redirect('/')
 def getAdmin(request):
@@ -465,7 +465,7 @@ def getAdmin(request):
                     if search in x.name:
                         list.append(x)
                 listT =thongBao(request)
-                return render(request, 'pages/Admin.html',{"device": list,"thongbao":listT,"name":name,"role":rl,"id":id})
+                return render(request, 'pages/admin.html',{"device": list,"thongbao":listT,"name":name,"role":rl,"id":id})
             if(xoa!=None): # xóa thiết bị
                 device = get_object_or_404(Device, pk=xoa)
                 device.delete()
@@ -473,7 +473,7 @@ def getAdmin(request):
             if capnhat != None: # cập nhật
                 device = Device.objects.get(id =capnhat)
                 listT =thongBao(request)
-                return render(request, 'pages/Add.html',{"device":device, "role":rl,"name":name, "thongbao":listT,"id":id})
+                return render(request, 'pages/add.html',{"device":device, "role":rl,"name":name, "thongbao":listT,"id":id})
             if mon!="" and mon != None: # lọc môn hết hạn
                 device = Device.objects.all()
                 listmon =[]
@@ -486,10 +486,10 @@ def getAdmin(request):
                         if mon in x.code:
                             listmon.append(x)
                 listT = thongBao(request)
-                return render(request, 'pages/Admin.html',{"device": listmon,"thongbao":listT,"name":name,"role":rl,"id":id})
+                return render(request, 'pages/admin.html',{"device": listmon,"thongbao":listT,"name":name,"role":rl,"id":id})
         device = Device.objects.all()
         listT = thongBao(request)
-        return render(request, 'pages/Admin.html',{"device":device,"role":rl,"name":name, "thongbao":listT,"id":id})
+        return render(request, 'pages/admin.html',{"device":device,"role":rl,"name":name, "thongbao":listT,"id":id})
     else:
         return redirect('/')
 def getAdd(request):
@@ -507,7 +507,7 @@ def getAdd(request):
                 form.save()
                 return redirect('/admins')
         id = request.session.get('id') #eeeeeeeeee
-        return render(request, 'pages/Add.html',{"id":id})
+        return render(request, 'pages/add.html',{"id":id})
     else:
         return redirect('/')
 def getLab(request):
@@ -528,7 +528,7 @@ def getLab(request):
             if deviceId != None: # đăng ký phòng bộ môn
                 device = Device.objects.get(id=deviceId)
                 listT = thongBao(request)
-                return render(request,'pages/Borrowlab.html',{"device": device,"name":name,"role":rl,"userName":userName})
+                return render(request,'pages/borrowlab.html',{"device": device,"name":name,"role":rl,"userName":userName})
         device = Device.objects.all()
         listDevice1 =[]
         listDevice2 =[]
@@ -558,7 +558,7 @@ def getLab(request):
                             listDevice0.append(x)
         
         listT = thongBao(request)
-        return render(request, 'pages/Lab.html',{"device0":giosangtiet(listDevice0),"device1":listDevice1,"device2":listDevice2,"device3":listDevice3,"device4":listDevice4,"deviceKt":listDeviceKt,"role":rl,"name":name,"tb":True,"thongbao":listT,"id":id})
+        return render(request, 'pages/lab.html',{"device0":giosangtiet(listDevice0),"device1":listDevice1,"device2":listDevice2,"device3":listDevice3,"device4":listDevice4,"deviceKt":listDeviceKt,"role":rl,"name":name,"tb":True,"thongbao":listT,"id":id})
     else:
         return redirect('/')
 def getBorrowLab(request):
@@ -581,9 +581,9 @@ def getBorrowLab(request):
                     return redirect('/thietbidangduocmuon')
             device = Device.objects.get(id = deviceId)
             listT = thongBao(request)
-            return render(request, 'pages/BorrowLab.html',{"device": device,"thongbao":listT,"userName":userName}) # mấy cái return này trả về view , data tương ứng để hiển thị
+            return render(request, 'pages/borrowLab.html',{"device": device,"thongbao":listT,"userName":userName}) # mấy cái return này trả về view , data tương ứng để hiển thị
         listT = thongBao(request)
-        return render(request, 'pages/BorrowLab.html',{"thongbao":listT,"userName":userName})
+        return render(request, 'pages/borrowLab.html',{"thongbao":listT,"userName":userName})
     else:
         return redirect('/')
 def getBorrowDevice(request):
@@ -618,12 +618,12 @@ def getBorrowDevice(request):
                     return redirect('/thietbidangduocmuon')
                 else:
                     mt = BorrowReturn.objects.filter(id=update)
-                    return render(request, 'pages/Borrowdevice.html',{"devicemt": giosangtiet(mt)[0],"userName":userName})
+                    return render(request, 'pages/borrowdevice.html',{"devicemt": giosangtiet(mt)[0],"userName":userName})
             device = Device.objects.get(id = deviceId)
             listT = thongBao(request)
-            return render(request, 'pages/Borrowdevice.html',{"device": device,"thongbao":listT,"userName":userName})
+            return render(request, 'pages/borrowdevice.html',{"device": device,"thongbao":listT,"userName":userName})
         listT = thongBao(request)
-        return render(request, 'pages/BorrowDevice.html',{"thongbao":listT,"userName":userName})
+        return render(request, 'pages/borrowDevice.html',{"thongbao":listT,"userName":userName})
     else:
         return redirect('/')
 def getThietBiDangDuocMuon(request):
@@ -672,7 +672,7 @@ def getThietBiDangDuocMuon(request):
                     #     if search in x.deviceId.name:
                     #         listm.append(x)
                 listT =thongBao(request)
-                return render(request, 'pages/Thietbidangduocmuon.html',{"device1": listm,"device2":listt,"device3":listll,"role":rl,"name":name,"thongbao":listT,"id":id})
+                return render(request, 'pages/thietbidangduocmuon.html',{"device1": listm,"device2":listt,"device3":listll,"role":rl,"name":name,"thongbao":listT,"id":id})
             if xoa != None and idtra != None: # xác nhận trả
                 device = Device.objects.get(id=xoa)
                 device.quantity = int(device.quantity)+1
@@ -683,7 +683,7 @@ def getThietBiDangDuocMuon(request):
                 return redirect('/thietbidangduocmuon')
             if idxoalich != None: # cập nhật lại lịch sử mượn
                 mt = BorrowReturn.objects.filter(id=idxoalich)
-                return render(request, 'pages/Borrowdevice.html',{"devicemt": giosangtiet(mt)[0],"userName":userName})
+                return render(request, 'pages/borrowdevice.html',{"devicemt": giosangtiet(mt)[0],"userName":userName})
             if mon!="": # hiển thị những thiét bị lên lịch,đã trả, chưa trả
                 idUser = request.session.get('id') #eeeeeeeeee
                 device = BorrowReturn.objects.select_related('deviceId','userId').filter(userId=idUser)
@@ -704,7 +704,7 @@ def getThietBiDangDuocMuon(request):
                 listTru1 =giosangtiet(listTru)
                 listtruT1 =giosangtiet(listtruT)
                 listT =thongBao(request)
-                return render(request, 'pages/Thietbidangduocmuon.html',{"device1": listTru1,"device2":listm1,"device3":listtruT1,"role":rl,"name":name,"thongbao":listT,"id":id})
+                return render(request, 'pages/thietbidangduocmuon.html',{"device1": listTru1,"device2":listm1,"device3":listtruT1,"role":rl,"name":name,"thongbao":listT,"id":id})
         idUser = request.session.get('id') #eeeeeeeeee
         device = BorrowReturn.objects.select_related('deviceId','userId').filter(userId=idUser)
         listm=[] #admin
@@ -722,7 +722,7 @@ def getThietBiDangDuocMuon(request):
         listTru1 =giosangtiet(listTru)
         listtruT1 =giosangtiet(listtruT)
         listT = thongBao(request)
-        return render(request, 'pages/Thietbidangduocmuon.html',{"device1": listTru1,"device2":listm1,"device3":listtruT1,"role":rl,"name":name,"thongbao":listT,"id":id})
+        return render(request, 'pages/thietbidangduocmuon.html',{"device1": listTru1,"device2":listm1,"device3":listtruT1,"role":rl,"name":name,"thongbao":listT,"id":id})
     else:
         return redirect('/')
 def getBase(request): # lấy base maecj địch 
@@ -733,4 +733,4 @@ def getBase(request): # lấy base maecj địch
         rl = True
     else:
         rl =False
-    return render(request, 'pages/Thongbao.html',{"role": rl,"name":name})
+    return render(request, 'pages/thongbao.html',{"role": rl,"name":name})
