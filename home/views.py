@@ -307,7 +307,7 @@ def getHome(request):
             deviceId = request.POST.get('deviceId')
             mon = request.POST.get('mon')
             search = request.POST.get('search')
-            if search != None or search != '': # thanh tìm kiếm  input thuộc tên thiết bị lưu vào mảng mới và trả về
+            if search != None: # thanh tìm kiếm  input thuộc tên thiết bị lưu vào mảng mới và trả về
                 search = search.upper()
                 l = Device.objects.all()
                 device=[]
@@ -324,7 +324,7 @@ def getHome(request):
                 device = Device.objects.get(id = deviceId)
                 listT = thongBao(request)
                 return render(request, 'pages/borrowdevice.html',{"device": device,"thongbao":listT,"name":name,"role":rl,"userName":userName})
-            if mon!="" or mon!="none": #tìm kiếm theo môn
+            if mon!="" and mon!="none": #tìm kiếm theo môn
                 l = Device.objects.all()
                 device=[]
                 for x in l:
@@ -658,13 +658,14 @@ def getThietBiDangDuocMuon(request):
                 listt=[]
                 listll=[]
                 for x in device:
-                    if "-" in x.giaovien:
-                        if "T" in x.giaovien:
-                            listll.append(x)
+                    if search in x.deviceId.name:
+                        if "-" in x.giaovien:
+                            if "T" in x.giaovien:
+                                listll.append(x)
+                            else:
+                                listm.append(x)
                         else:
-                            listm.append(x)
-                    else:
-                        listt.append(x)
+                            listt.append(x)
                     # if "-T" in x.giaovien:
                     #     if search in x.deviceId.name:
                     #         listt.append(x)  
